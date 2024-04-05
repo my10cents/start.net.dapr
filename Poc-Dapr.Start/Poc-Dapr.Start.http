@@ -1,0 +1,6 @@
+@Poc_Dapr.Start_HostAddress = http://localhost:5123
+
+GET {{Poc_Dapr.Start_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

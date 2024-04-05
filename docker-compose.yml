@@ -1,0 +1,39 @@
+version: '3.4'
+
+#http://localhost:3500/v1.0/invoke/my-app/method/teste
+
+services:
+  my-app-svc:
+    image: my-app-img:latest
+    build:
+      context: .
+      dockerfile: Poc-Dapr.Start/Dockerfile
+    # ports:
+    #   - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks: 
+      - my-network
+
+  dapr-sidecar:
+    image: "daprio/dapr:latest"
+    command: ["./daprd", 
+        "-app-id", "my-app", 
+        "-app-port","8080",
+        "-app-channel-address","my-app-svc",
+        "-enable-profiling", "true",
+        "-log-level","warn",
+        "-resources-path","/components"
+        ]
+    volumes:
+      - "./components/:/components"
+    ports:
+      - "3500:3500"   
+      - "50001:50001"
+    depends_on:
+      - my-app-svc
+    networks: 
+      - my-network
+networks:
+  my-network:
+    driver: bridge
